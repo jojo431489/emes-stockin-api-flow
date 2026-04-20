@@ -1,0 +1,52 @@
+<request type="sync" key="fca0a819df70df056ee57ae77f1712d4">
+   <host prod="MES" ver="6.00.08" ip="192.168.2.253" id="PCBA_STD_Production" acct="DS" lang="zh_TW" timestamp="20260124152608524" />
+   <service prod="WFGP" name="stockin.data.create" srvver="4.0.27" ip="192.168.2.253" id="YIFEI_Production" />
+   <datakey>
+      <key name="EntId">HENRY2023</key>
+      <key name="CompanyId">HENRY2023</key>
+      <key name="source_no" />
+      <key name="wo_no" />
+   </datakey>
+   <payload>
+      <param key="std_data" type="xml">
+         <data_request>
+            <datainfo>
+               <parameter key="enterprise_no" type="numeric">HENRY2023</parameter>
+               <parameter key="site_no" type="string">HENRY2023</parameter>
+               <parameter key="stock_in_data" type="data">
+                  <data name="stock_in">
+                     <row seq="1">
+                        <field name="doc_type_no" type="string">5802</field>
+                        <field name="create_date" type="date">20260124</field>
+                        <field name="workstation_no" type="string">14004</field>
+                        <field name="remark" type="string" />
+                        <field name="factory_no" type="string">HR</field>
+                        <field name="source_no" type="string">D3-02601240066</field>
+                        <field name="operator_no" type="string">H20855</field>
+                        <detail name="stock_in_detail">
+                           <row>
+                              <field name="seq" type="string" />
+                              <field name="wo_no" type="string">5101-20251108014</field>
+                              <field name="outsourcing_stock_in_no" type="string" />
+                              <field name="plot_no" type="string">5101-20251108014</field>
+                              <field name="item_no" type="string">3-BJ900-03006-J02</field>
+                              <field name="stock_in_qty" type="numeric">423500.000</field>
+                              <field name="unit_no" type="string">PCS</field>
+                              <field name="warehouse_no" type="string">1001</field>
+                              <field name="location_no" type="string">00</field>
+                              <field name="lot_no" type="string">5101-20251108014</field>
+                              <field name="item_feature_no" type="string" />
+                              <field name="remark" type="string" />
+                              <field name="purchase_seq" type="numeric" />
+                              <field name="stock_in_type" type="string" />
+                              <field name="outsourcing_source_no" type="string" />
+                           </row>
+                        </detail>
+                     </row>
+                  </data>
+               </parameter>
+            </datainfo>
+         </data_request>
+      </param>
+   </payload>
+</request>

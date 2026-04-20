@@ -1,0 +1,19 @@
+<response>
+   <code>019</code>
+   <message>EAI Response:平台回覆同步結果</message>
+   <reqid>c43bc4d3-2388-456a-8924-371c1ff3ab89</reqid>
+   <srvver>4.0.0</srvver>
+   <srvcode>000</srvcode>
+   <payload>
+      <param key="std_data" type="xml">
+         <data_response>
+            <execution>
+               <status code="0" sql_code="0" description="" />
+            </execution>
+            <datainfo>
+               <parameter key="stock_in_no" type="string">5802-20260124066 </parameter>
+            </datainfo>
+         </data_response>
+      </param>
+   </payload>
+</response>
