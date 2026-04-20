@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>eMES 入庫單 API 整合流程規格書</title>
+    <title>eMES 入庫單 API 規格書 (JSON 版)</title>
     <style>
         :root {
             --primary-color: #2563eb;
@@ -11,7 +11,6 @@
             --success-color: #16a34a;
             --error-color: #dc2626;
             --warning-color: #d97706;
-            --info-color: #0891b2;
             --bg-color: #f8fafc;
             --border-color: #e2e8f0;
             --text-color: #1e293b;
@@ -25,7 +24,7 @@
             background-color: var(--bg-color);
         }
         .navbar {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             padding: 20px 30px;
             color: white;
             position: sticky;
@@ -35,21 +34,15 @@
         }
         .navbar h1 { font-size: 1.5em; margin-bottom: 5px; }
         .navbar .subtitle { opacity: 0.9; font-size: 0.9em; }
-        .container { max-width: 1400px; margin: 0 auto; padding: 30px; }
-
-        /* TOC */
-        .toc {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        .navbar .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin-left: 10px;
         }
-        .toc h2 { color: var(--primary-color); margin-bottom: 15px; font-size: 1.3em; }
-        .toc ul { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px; }
-        .toc a { color: var(--text-color); text-decoration: none; display: block; padding: 10px 15px; background: var(--bg-color); border-radius: 6px; transition: all 0.2s; }
-        .toc a:hover { background: #e0e7ff; color: var(--primary-color); }
-        .toc .flow-num { display: inline-block; width: 28px; height: 28px; background: var(--primary-color); color: white; border-radius: 50%; text-align: center; line-height: 28px; margin-right: 10px; font-size: 0.85em; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 30px; }
 
         /* Section */
         .section {
@@ -61,70 +54,20 @@
         }
         h2 {
             color: var(--secondary-color);
-            font-size: 1.5em;
+            font-size: 1.4em;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 3px solid var(--primary-color);
+            border-bottom: 3px solid #10b981;
         }
-        h3 { color: var(--text-color); font-size: 1.2em; margin: 25px 0 15px; }
+        h3 { color: var(--text-color); font-size: 1.15em; margin: 25px 0 15px; }
         h4 { color: var(--text-muted); font-size: 1em; margin: 20px 0 10px; }
-
-        /* Flow Header */
-        .flow-header {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 25px;
-            padding: 20px;
-            border-radius: 10px;
-        }
-        .flow-header.flow-1 { background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%); }
-        .flow-header.flow-2 { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
-        .flow-header.flow-3 { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
-        .flow-header.flow-4 { background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%); }
-        .flow-header .num {
-            width: 60px; height: 60px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.8em; font-weight: bold; color: white;
-        }
-        .flow-header .info { color: white; }
-        .flow-header .info h3 { color: white; margin: 0 0 5px 0; font-size: 1.3em; }
-        .flow-header .info p { opacity: 0.9; margin: 0; }
-
-        /* Flow Direction */
-        .flow-direction {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-            padding: 25px;
-            background: var(--bg-color);
-            border-radius: 10px;
-            margin: 20px 0;
-        }
-        .flow-box {
-            padding: 15px 25px;
-            border-radius: 8px;
-            font-weight: 600;
-            text-align: center;
-            min-width: 120px;
-        }
-        .flow-box.emes { background: #3b82f6; color: white; }
-        .flow-box.esb { background: #10b981; color: white; }
-        .flow-box.wfgp { background: #f59e0b; color: white; }
-        .flow-arrow {
-            font-size: 2em;
-            color: var(--text-muted);
-        }
 
         /* Tables */
         table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 0.9em; }
         th, td { border: 1px solid var(--border-color); padding: 10px 12px; text-align: left; vertical-align: top; }
-        th { background: var(--primary-color); color: white; font-weight: 600; }
+        th { background: #10b981; color: white; font-weight: 600; }
         tr:nth-child(even) { background: var(--bg-color); }
-        tr:hover { background: #e0e7ff; }
+        tr:hover { background: #d1fae5; }
         .required { background: var(--error-color); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
         .optional { background: var(--text-muted); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.75em; }
 
@@ -145,18 +88,17 @@
             position: absolute;
             top: 8px;
             right: 12px;
-            background: rgba(255,255,255,0.1);
+            background: #10b981;
             padding: 3px 10px;
             border-radius: 4px;
             font-size: 0.8em;
-            color: #94a3b8;
+            color: white;
         }
         .code-block .key { color: #7dd3fc; }
         .code-block .string { color: #86efac; }
         .code-block .number { color: #fbbf24; }
         .code-block .comment { color: #64748b; font-style: italic; }
-        .code-block .tag { color: #f472b6; }
-        .code-block .attr { color: #a5b4fc; }
+        .code-block .bool { color: #f472b6; }
 
         /* Info Box */
         .info-box {
@@ -164,102 +106,63 @@
             border-radius: 8px;
             margin: 15px 0;
         }
-        .info-box.info { background: #dbeafe; border-left: 4px solid var(--primary-color); }
+        .info-box.info { background: #d1fae5; border-left: 4px solid #10b981; }
         .info-box.warning { background: #fef3c7; border-left: 4px solid var(--warning-color); }
         .info-box.success { background: #dcfce7; border-left: 4px solid var(--success-color); }
-        .info-box.error { background: #fee2e2; border-left: 4px solid var(--error-color); }
 
-        /* Badge */
-        .badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8em;
-            font-weight: 600;
-            margin-right: 5px;
+        /* TOC */
+        .toc {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
-        .badge-json { background: #dbeafe; color: #2563eb; }
-        .badge-xml { background: #dcfce7; color: #16a34a; }
-        .badge-post { background: #fef3c7; color: #d97706; }
+        .toc h2 { color: #10b981; margin-bottom: 15px; font-size: 1.2em; border-bottom-color: #10b981; }
+        .toc ul { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; }
+        .toc a { color: var(--text-color); text-decoration: none; display: block; padding: 10px 15px; background: var(--bg-color); border-radius: 6px; transition: all 0.2s; }
+        .toc a:hover { background: #d1fae5; color: #059669; }
 
-        /* Comparison Grid */
-        .comparison-grid {
+        /* Comparison */
+        .format-compare {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
             margin: 20px 0;
         }
-        .comparison-card {
+        .format-card {
             background: var(--bg-color);
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
             border: 2px solid var(--border-color);
         }
-        .comparison-card h4 {
-            margin-top: 0;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--border-color);
-        }
+        .format-card.old { border-color: #f87171; }
+        .format-card.new { border-color: #10b981; }
+        .format-card h4 { margin-top: 0; }
 
-        /* Architecture Diagram */
-        .architecture-diagram {
+        /* Architecture */
+        .arch-diagram {
             text-align: center;
             padding: 30px;
-            background: white;
+            background: #f0fdf4;
             border-radius: 12px;
             margin: 20px 0;
         }
 
-        /* Screenshot Images */
-        .screenshot-container {
-            background: #f8fafc;
-            border: 2px solid var(--border-color);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        .screenshot-container h4 {
-            margin-top: 0;
-            margin-bottom: 15px;
-            color: var(--text-color);
-        }
-        .screenshot-container img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-        .screenshot-container img:hover {
-            transform: scale(1.02);
-        }
-        .screenshot-caption {
-            margin-top: 12px;
-            font-size: 0.9em;
-            color: var(--text-muted);
+        @media (max-width: 768px) {
+            .format-compare { grid-template-columns: 1fr; }
         }
 
-        /* Print Styles */
         @media print {
             .navbar { position: static; }
             .section { break-inside: avoid; }
-            body { background: white; }
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .comparison-grid { grid-template-columns: 1fr; }
-            .flow-direction { flex-direction: column; }
-            .flow-arrow { transform: rotate(90deg); }
         }
     </style>
 </head>
 <body>
     <nav class="navbar">
-        <h1>📋 eMES 入庫單 API 整合流程規格書</h1>
-        <p class="subtitle">stockin.data.create | MES ↔ ESB ↔ WFGP/ERP 四段式通訊架構</p>
+        <h1>📋 eMES 入庫單 API 規格書 <span class="badge">JSON 版</span></h1>
+        <p class="subtitle">stockin.data.create | 全 JSON 格式 API 規格 | 供 ERP 廠商對接使用</p>
     </nav>
 
     <div class="container">
@@ -267,794 +170,508 @@
         <div class="toc">
             <h2>📑 文件目錄</h2>
             <ul>
-                <li><a href="#overview"><span class="flow-num">0</span>架構總覽與系統說明</a></li>
-                <li><a href="#flow1"><span class="flow-num">1</span>eMES → ESB (JSON Request)</a></li>
-                <li><a href="#flow2"><span class="flow-num">2</span>ESB → WFGP (XML Request)</a></li>
-                <li><a href="#flow3"><span class="flow-num">3</span>WFGP → ESB (XML Response)</a></li>
-                <li><a href="#flow4"><span class="flow-num">4</span>ESB → eMES (JSON Response)</a></li>
-                <li><a href="#fields"><span class="flow-num">5</span>完整欄位對照表</a></li>
-                <li><a href="#errors"><span class="flow-num">6</span>錯誤處理與狀態碼</a></li>
-                <li><a href="#appendix"><span class="flow-num">7</span>附錄：程式碼位置</a></li>
+                <li><a href="#overview">1. 概述與架構說明</a></li>
+                <li><a href="#request">2. Request 規格</a></li>
+                <li><a href="#response">3. Response 規格</a></li>
+                <li><a href="#fields">4. 完整欄位說明</a></li>
+                <li><a href="#examples">5. 完整範例</a></li>
+                <li><a href="#errors">6. 錯誤碼與處理</a></li>
+                <li><a href="#cancel">7. 取消入庫 API</a></li>
             </ul>
         </div>
 
-        <!-- 0. 架構總覽 -->
+        <!-- 1. 概述 -->
         <div class="section" id="overview">
-            <h2>0. 架構總覽與系統說明</h2>
+            <h2>1. 概述與架構說明</h2>
 
-            <h3>0.1 系統架構圖</h3>
-            <div class="architecture-diagram">
-                <svg width="900" height="350" viewBox="0 0 900 350" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
-                            <polygon points="0 0, 10 3.5, 0 7" fill="#6366f1"/>
-                        </marker>
-                        <linearGradient id="mesGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#3b82f6"/>
-                            <stop offset="100%" style="stop-color:#1d4ed8"/>
-                        </linearGradient>
-                        <linearGradient id="esbGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#10b981"/>
-                            <stop offset="100%" style="stop-color:#059669"/>
-                        </linearGradient>
-                        <linearGradient id="erpGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#f59e0b"/>
-                            <stop offset="100%" style="stop-color:#d97706"/>
-                        </linearGradient>
-                    </defs>
-
-                    <!-- 背景區域 -->
-                    <rect x="30" y="30" width="200" height="280" rx="15" fill="#dbeafe" stroke="#3b82f6" stroke-width="2"/>
-                    <text x="130" y="60" text-anchor="middle" font-size="16" font-weight="bold" fill="#1d4ed8">eMES 系統</text>
-
-                    <rect x="350" y="30" width="200" height="280" rx="15" fill="#dcfce7" stroke="#10b981" stroke-width="2"/>
-                    <text x="450" y="60" text-anchor="middle" font-size="16" font-weight="bold" fill="#059669">ESB 中台</text>
-
-                    <rect x="670" y="30" width="200" height="280" rx="15" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
-                    <text x="770" y="60" text-anchor="middle" font-size="16" font-weight="bold" fill="#d97706">WFGP/ERP</text>
-
-                    <!-- eMES 節點 -->
-                    <rect x="60" y="100" width="140" height="50" rx="8" fill="url(#mesGrad)"/>
-                    <text x="130" y="130" text-anchor="middle" fill="white" font-size="12">工單出站作業</text>
-
-                    <rect x="60" y="180" width="140" height="50" rx="8" fill="url(#mesGrad)"/>
-                    <text x="130" y="205" text-anchor="middle" fill="white" font-size="11">TransOrderDataToJson</text>
-                    <text x="130" y="220" text-anchor="middle" fill="white" font-size="10">JSON 組裝</text>
-
-                    <!-- ESB 節點 -->
-                    <rect x="380" y="100" width="140" height="50" rx="8" fill="url(#esbGrad)"/>
-                    <text x="450" y="125" text-anchor="middle" fill="white" font-size="11">接收 JSON</text>
-                    <text x="450" y="140" text-anchor="middle" fill="white" font-size="10">轉換 XML</text>
-
-                    <rect x="380" y="180" width="140" height="50" rx="8" fill="url(#esbGrad)"/>
-                    <text x="450" y="205" text-anchor="middle" fill="white" font-size="11">接收 XML</text>
-                    <text x="450" y="220" text-anchor="middle" fill="white" font-size="10">轉換 JSON</text>
-
-                    <!-- ERP 節點 -->
-                    <rect x="700" y="100" width="140" height="50" rx="8" fill="url(#erpGrad)"/>
-                    <text x="770" y="125" text-anchor="middle" fill="white" font-size="11">stockin.data.create</text>
-                    <text x="770" y="140" text-anchor="middle" fill="white" font-size="10">建立入庫單</text>
-
-                    <rect x="700" y="180" width="140" height="50" rx="8" fill="url(#erpGrad)"/>
-                    <text x="770" y="205" text-anchor="middle" fill="white" font-size="11">回傳結果</text>
-                    <text x="770" y="220" text-anchor="middle" fill="white" font-size="10">stock_in_no</text>
-
-                    <!-- 連接線 -->
-                    <line x1="200" y1="125" x2="375" y2="125" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow)"/>
-                    <text x="290" y="115" text-anchor="middle" font-size="11" fill="#3b82f6">① JSON</text>
-
-                    <line x1="520" y1="125" x2="695" y2="125" stroke="#10b981" stroke-width="2" marker-end="url(#arrow)"/>
-                    <text x="610" y="115" text-anchor="middle" font-size="11" fill="#10b981">② XML</text>
-
-                    <line x1="695" y1="205" x2="520" y2="205" stroke="#f59e0b" stroke-width="2" marker-end="url(#arrow)"/>
-                    <text x="610" y="195" text-anchor="middle" font-size="11" fill="#f59e0b">③ XML</text>
-
-                    <line x1="375" y1="205" x2="200" y2="205" stroke="#8b5cf6" stroke-width="2" marker-end="url(#arrow)"/>
-                    <text x="290" y="195" text-anchor="middle" font-size="11" fill="#8b5cf6">④ JSON</text>
-
-                    <!-- 圖例 -->
-                    <rect x="200" y="280" width="15" height="15" fill="#3b82f6"/>
-                    <text x="220" y="292" font-size="11">① eMES→ESB (JSON)</text>
-
-                    <rect x="370" y="280" width="15" height="15" fill="#10b981"/>
-                    <text x="390" y="292" font-size="11">② ESB→WFGP (XML)</text>
-
-                    <rect x="540" y="280" width="15" height="15" fill="#f59e0b"/>
-                    <text x="560" y="292" font-size="11">③ WFGP→ESB (XML)</text>
-
-                    <rect x="710" y="280" width="15" height="15" fill="#8b5cf6"/>
-                    <text x="730" y="292" font-size="11">④ ESB→eMES (JSON)</text>
-                </svg>
-            </div>
-
-            <h3>0.2 基本資訊</h3>
+            <h3>1.1 API 基本資訊</h3>
             <table>
                 <tr><th width="25%">項目</th><th>說明</th></tr>
-                <tr><td>API 名稱</td><td><code>stockin.data.create</code> (工單完工入庫單資料新增)</td></tr>
-                <tr><td>呼叫方向</td><td>MES → ESB → WFGP/ERP → ESB → MES</td></tr>
-                <tr><td>觸發時機</td><td>工單最後一站出站完成時</td></tr>
-                <tr><td>通訊協定</td><td>HTTP POST (JSON/XML)</td></tr>
-                <tr><td>ESB 服務名稱</td><td>WFGPtransOrder</td></tr>
+                <tr><td>API 名稱</td><td><code>stockin.data.create</code></td></tr>
+                <tr><td>功能說明</td><td>工單完工入庫單資料新增</td></tr>
+                <tr><td>呼叫方向</td><td>MES → ERP</td></tr>
+                <tr><td>通訊協定</td><td>HTTP POST</td></tr>
+                <tr><td>Content-Type</td><td><code>application/json; charset=UTF-8</code></td></tr>
+                <tr><td>編碼格式</td><td>UTF-8</td></tr>
                 <tr><td>同步/非同步</td><td>同步呼叫 (Sync)</td></tr>
             </table>
 
-            <h3>0.3 環境資訊（範例）</h3>
-            <table>
-                <tr><th>系統</th><th>主機位址</th><th>說明</th></tr>
-                <tr><td>eMES_Test</td><td>192.168.2.253</td><td>MES 測試環境</td></tr>
-                <tr><td>ESB</td><td>192.168.2.253:3301</td><td>鼎華智能 ESB 中台</td></tr>
-                <tr><td>WFGP_Test</td><td>-</td><td>WFGP ERP 測試環境</td></tr>
-            </table>
+            <h3>1.2 通訊架構</h3>
+            <div class="arch-diagram">
+                <svg width="600" height="150" viewBox="0 0 600 150">
+                    <defs>
+                        <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+                            <polygon points="0 0, 10 3.5, 0 7" fill="#10b981"/>
+                        </marker>
+                    </defs>
+                    <!-- MES -->
+                    <rect x="50" y="50" width="120" height="60" rx="10" fill="#3b82f6"/>
+                    <text x="110" y="85" text-anchor="middle" fill="white" font-weight="bold">eMES</text>
+
+                    <!-- ERP -->
+                    <rect x="430" y="50" width="120" height="60" rx="10" fill="#f59e0b"/>
+                    <text x="490" y="85" text-anchor="middle" fill="white" font-weight="bold">ERP</text>
+
+                    <!-- Arrows -->
+                    <line x1="170" y1="70" x2="425" y2="70" stroke="#10b981" stroke-width="3" marker-end="url(#arrow)"/>
+                    <line x1="425" y1="90" x2="170" y2="90" stroke="#10b981" stroke-width="3" marker-end="url(#arrow)"/>
+
+                    <!-- Labels -->
+                    <rect x="250" y="55" width="100" height="24" rx="4" fill="#d1fae5"/>
+                    <text x="300" y="72" text-anchor="middle" fill="#059669" font-size="12" font-weight="bold">JSON Request</text>
+
+                    <rect x="250" y="82" width="100" height="24" rx="4" fill="#d1fae5"/>
+                    <text x="300" y="99" text-anchor="middle" fill="#059669" font-size="12" font-weight="bold">JSON Response</text>
+                </svg>
+            </div>
 
             <div class="info-box info">
-                <strong>📌 重要說明</strong><br>
-                本文件描述的是 eMES 與 WFGP/ERP 透過 ESB 中台進行入庫單資料交換的完整流程。<br>
-                ESB 負責 JSON ↔ XML 的格式轉換，以及服務路由。
+                <strong>✅ 全 JSON 格式優點</strong>
+                <ul style="margin-top:10px; margin-left:20px;">
+                    <li>格式統一，無需 XML ↔ JSON 轉換</li>
+                    <li>解析效率高，程式碼簡潔</li>
+                    <li>支援各種程式語言原生解析</li>
+                    <li>易於除錯和測試</li>
+                </ul>
             </div>
         </div>
 
-        <!-- 流程1: eMES → ESB -->
-        <div class="section" id="flow1">
-            <div class="flow-header flow-1">
-                <div class="num">1</div>
-                <div class="info">
-                    <h3>eMES → ESB (JSON Request)</h3>
-                    <p>MES 系統組裝入庫資料，以 JSON 格式發送至 ESB 中台</p>
-                </div>
-            </div>
+        <!-- 2. Request 規格 -->
+        <div class="section" id="request">
+            <h2>2. Request 規格</h2>
 
-            <div class="flow-direction">
-                <div class="flow-box emes">eMES</div>
-                <div class="flow-arrow">→</div>
-                <div class="flow-box esb">ESB</div>
-            </div>
-
-            <h3>1.1 HTTP 請求資訊</h3>
+            <h3>2.1 HTTP 請求</h3>
             <table>
                 <tr><th width="25%">項目</th><th>值</th></tr>
-                <tr><td>Method</td><td><span class="badge badge-post">POST</span></td></tr>
-                <tr><td>Content-Type</td><td><code>application/json</code></td></tr>
-                <tr><td>Host</td><td><code>192.168.2.253:3301</code></td></tr>
-                <tr><td>User-Agent</td><td><code>Java/1.8.0_392</code></td></tr>
+                <tr><td>Method</td><td>POST</td></tr>
+                <tr><td>Content-Type</td><td>application/json; charset=UTF-8</td></tr>
+                <tr><td>Accept</td><td>application/json</td></tr>
             </table>
 
-            <h3>1.2 外層結構</h3>
-            <table>
-                <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>來源</th></tr>
-                <tr><td>companyID</td><td>string</td><td><span class="required">Y</span></td><td>公司別</td><td>COMPANYID</td></tr>
-                <tr><td>userId</td><td>string</td><td><span class="required">Y</span></td><td>操作人員工號</td><td>CONFIRMER</td></tr>
-                <tr><td>doAction</td><td>string</td><td><span class="required">Y</span></td><td>動作類型 (2=移轉單)</td><td>DOACTION</td></tr>
-                <tr><td>docase</td><td>string</td><td><span class="required">Y</span></td><td>操作類型 (1=新增)</td><td>DOCASE</td></tr>
-                <tr><td>head</td><td>object</td><td><span class="required">Y</span></td><td>表頭資料</td><td>-</td></tr>
-                <tr><td>line</td><td>array</td><td><span class="required">Y</span></td><td>表身明細陣列</td><td>-</td></tr>
-            </table>
-
-            <h3>1.3 表頭 (head) 欄位</h3>
-            <table>
-                <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>MES 來源</th></tr>
-                <tr><td>transferType</td><td>string</td><td><span class="required">Y</span></td><td>移轉單別 (D3=入庫)</td><td>TRANSTYPE</td></tr>
-                <tr><td>date</td><td>string</td><td><span class="required">Y</span></td><td>單據日期 (YYYYMMDD)</td><td>TRANSDATE</td></tr>
-                <tr><td>moveOutType</td><td>string</td><td><span class="required">Y</span></td><td>移出類型 (1=工作站, 2=倉庫, 3=部門)</td><td>OUTTYPE</td></tr>
-                <tr><td>moveOutCode</td><td>string</td><td><span class="required">Y</span></td><td>移出代碼 (工作站/倉庫編號)</td><td>OUTDEPID</td></tr>
-                <tr><td>moveOutName</td><td>string</td><td><span class="optional">N</span></td><td>移出名稱</td><td>OUTDEPNAME</td></tr>
-                <tr><td>moveInType</td><td>string</td><td><span class="required">Y</span></td><td>移入類型</td><td>INTYPE</td></tr>
-                <tr><td>moveInCode</td><td>string</td><td><span class="required">Y</span></td><td>移入代碼 (倉庫編號)</td><td>INDEPID</td></tr>
-                <tr><td>moveInName</td><td>string</td><td><span class="optional">N</span></td><td>移入名稱</td><td>INDEPNAME</td></tr>
-                <tr><td>factoryCode</td><td>string</td><td><span class="required">Y</span></td><td>廠別代碼</td><td>FACTORYID</td></tr>
-                <tr><td>confirmationCode</td><td>string</td><td><span class="optional">N</span></td><td>確認碼</td><td>CONFIRMCODE</td></tr>
-                <tr><td>remark</td><td>string</td><td><span class="optional">N</span></td><td>備註</td><td>COMMENT</td></tr>
-                <tr><td>orderDate</td><td>string</td><td><span class="optional">N</span></td><td>訂單日期</td><td>DOCUMENTDATE</td></tr>
-                <tr><td>confirmer</td><td>string</td><td><span class="optional">N</span></td><td>確認人員</td><td>CREATER</td></tr>
-                <tr><td>taxType</td><td>string</td><td><span class="optional">N</span></td><td>稅別</td><td>INVOICECOUNT</td></tr>
-                <tr><td>taxRate</td><td>string</td><td><span class="optional">N</span></td><td>稅率</td><td>INVOICEDATE</td></tr>
-                <tr><td>currency</td><td>string</td><td><span class="optional">N</span></td><td>幣別</td><td>INVOICENO</td></tr>
-                <tr><td>eMESTransferType</td><td>string</td><td><span class="required">Y</span></td><td>MES 移轉單別</td><td>TRANSTYPE</td></tr>
-                <tr><td>eMESTransferCode</td><td>string</td><td><span class="required">Y</span></td><td>MES 移轉單號</td><td>TRANSNO</td></tr>
-                <tr><td>create</td><td>string</td><td><span class="optional">N</span></td><td>建立人員</td><td>CREATER</td></tr>
-                <tr><td>companyID</td><td>string</td><td><span class="required">Y</span></td><td>公司別</td><td>COMPANYID</td></tr>
-            </table>
-
-            <h3>1.4 表身 (line) 欄位</h3>
-            <table>
-                <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>MES 來源</th></tr>
-                <tr><td>moType</td><td>string</td><td><span class="required">Y</span></td><td>工單類別</td><td>MOTYPE</td></tr>
-                <tr><td>moCode</td><td>string</td><td><span class="required">Y</span></td><td>工單號碼</td><td>MONO</td></tr>
-                <tr><td>moveOutOpSeq</td><td>string</td><td><span class="required">Y</span></td><td>移出製程序號</td><td>OUTOPSEQ</td></tr>
-                <tr><td>moveOutOpId</td><td>string</td><td><span class="required">Y</span></td><td>移出製程代碼</td><td>OUTOP</td></tr>
-                <tr><td>moveInOpSeq</td><td>string</td><td><span class="optional">N</span></td><td>移入製程序號</td><td>INOPSEQ</td></tr>
-                <tr><td>moveInOpId</td><td>string</td><td><span class="optional">N</span></td><td>移入製程代碼</td><td>INOP</td></tr>
-                <tr><td>unit</td><td>string</td><td><span class="required">Y</span></td><td>庫存單位</td><td>UNIT</td></tr>
-                <tr><td>valuationUnit</td><td>string</td><td><span class="optional">N</span></td><td>計價單位</td><td>TC012</td></tr>
-                <tr><td>state</td><td>string</td><td><span class="required">Y</span></td><td>狀態/PATTERN</td><td>PATTERN</td></tr>
-                <tr><td>acceptanceQty</td><td>decimal</td><td><span class="optional">N</span></td><td>驗收數量</td><td>TL002</td></tr>
-                <tr><td>valuationQty</td><td>decimal</td><td><span class="optional">N</span></td><td>計價數量</td><td>TC015</td></tr>
-                <tr><td>scrapQty</td><td>decimal</td><td><span class="optional">N</span></td><td>報廢數量</td><td>SCRAPQTY</td></tr>
-                <tr><td>processUnitPrice</td><td>decimal</td><td><span class="optional">N</span></td><td>加工單價</td><td>TC017</td></tr>
-                <tr><td>processAmount</td><td>decimal</td><td><span class="optional">N</span></td><td>加工金額</td><td>TC018</td></tr>
-                <tr><td>deductionAmount</td><td>decimal</td><td><span class="optional">N</span></td><td>扣款金額</td><td>TC019</td></tr>
-                <tr><td>useTime</td><td>decimal</td><td><span class="optional">N</span></td><td>人工工時 (分鐘)</td><td>LABORHOUR</td></tr>
-                <tr><td>useMachineTime</td><td>decimal</td><td><span class="optional">N</span></td><td>機器工時 (分鐘)</td><td>MACHINEHOUR</td></tr>
-                <tr><td>moveOutCode</td><td>string</td><td><span class="optional">N</span></td><td>移出部門</td><td>OUTDEP</td></tr>
-                <tr><td>prepaidDate</td><td>string</td><td><span class="optional">N</span></td><td>預付日期</td><td>TC024</td></tr>
-                <tr><td>remark</td><td>string</td><td><span class="optional">N</span></td><td>備註</td><td>NOTE</td></tr>
-                <tr><td>batchCode</td><td>string</td><td><span class="required">Y</span></td><td>批號</td><td>LOTNO</td></tr>
-                <tr><td>outSourceType</td><td>string</td><td><span class="optional">N</span></td><td>託工單別</td><td>OUTORDERTYPE</td></tr>
-                <tr><td>outSourceCode</td><td>string</td><td><span class="optional">N</span></td><td>託工單號</td><td>OUTORDERNO</td></tr>
-                <tr><td>outSourceSeq</td><td>string</td><td><span class="optional">N</span></td><td>託工序號</td><td>OUTORDERSEQ</td></tr>
-                <tr><td>urgentMaterial</td><td>string</td><td><span class="optional">N</span></td><td>急料 (Y/N)</td><td>EMERGENCY</td></tr>
-                <tr><td>qty</td><td>decimal</td><td><span class="required">Y</span></td><td>移轉數量</td><td>TRANSQTY</td></tr>
-                <tr><td>inspectionReturnQty</td><td>decimal</td><td><span class="optional">N</span></td><td>驗退數量</td><td>TL003</td></tr>
-                <tr><td>acceptanceDate</td><td>string</td><td><span class="optional">N</span></td><td>驗收日期</td><td>TL010</td></tr>
-                <tr><td>inspectionStatus</td><td>string</td><td><span class="optional">N</span></td><td>檢驗結果</td><td>TL006</td></tr>
-                <tr><td>deductionExplanation</td><td>string</td><td><span class="optional">N</span></td><td>扣款說明</td><td>TC040</td></tr>
-                <tr><td>moveInCode</td><td>string</td><td><span class="optional">N</span></td><td>移入部門/倉庫</td><td>INDEP</td></tr>
-                <tr><td>transferPackagingQty</td><td>decimal</td><td><span class="optional">N</span></td><td>移轉包裝數量</td><td>TL007</td></tr>
-                <tr><td>acceptancePackagingQty</td><td>decimal</td><td><span class="optional">N</span></td><td>驗收包裝數量</td><td>TL004</td></tr>
-                <tr><td>inspectionReturnPackagingQty</td><td>decimal</td><td><span class="optional">N</span></td><td>驗退包裝數量</td><td>TL005</td></tr>
-                <tr><td>scrapPackagingQty</td><td>decimal</td><td><span class="optional">N</span></td><td>報廢包裝數量</td><td>TL008</td></tr>
-                <tr><td>prodCode</td><td>string</td><td><span class="required">Y</span></td><td>品號</td><td>ITEMID</td></tr>
-                <tr><td>prodName</td><td>string</td><td><span class="optional">N</span></td><td>品名</td><td>ITEMNAME</td></tr>
-                <tr><td>prodSpec</td><td>string</td><td><span class="optional">N</span></td><td>規格</td><td>ITEMDESCRIPTION</td></tr>
-                <tr><td>packUnit</td><td>string</td><td><span class="optional">N</span></td><td>包裝單位</td><td>TL009</td></tr>
-                <tr><td>moveInLocation</td><td>string</td><td><span class="optional">N</span></td><td>移入儲位</td><td>INSTORAGESPACE</td></tr>
-                <tr><td>expirationDate</td><td>string</td><td><span class="optional">N</span></td><td>有效期限</td><td>TC033</td></tr>
-                <tr><td>reinspectionDate</td><td>string</td><td><span class="optional">N</span></td><td>複驗日期</td><td>TC034</td></tr>
-                <tr><td>spc</td><td>string</td><td><span class="optional">N</span></td><td>是否整合 SPC (Y/N)</td><td>SPC</td></tr>
-                <tr><td>manufactureDualUnit</td><td>string</td><td><span class="optional">N</span></td><td>製造雙單位 (Y/N)</td><td>TWINUNIT</td></tr>
-                <tr><td>printLabel</td><td>string</td><td><span class="optional">N</span></td><td>列印標籤</td><td>固定 "N"</td></tr>
-                <tr><td>hasQty</td><td>string</td><td><span class="optional">N</span></td><td>是否有在製量 (0=有, 1=無)</td><td>計算值</td></tr>
-                <tr><td>dbUnitNumber</td><td>decimal</td><td><span class="optional">N</span></td><td>雙單位數量</td><td>-</td></tr>
-                <tr><td>dbUnit</td><td>string</td><td><span class="optional">N</span></td><td>雙單位</td><td>-</td></tr>
-            </table>
-
-            <h3>1.5 JSON 範例</h3>
+            <h3>2.2 JSON 結構總覽</h3>
             <div class="code-block">
-                <span class="lang-tag">JSON</span>
+                <span class="lang-tag">JSON Structure</span>
 <pre>{
-  <span class="key">"companyID"</span>: <span class="string">"HENRY2023"</span>,
-  <span class="key">"userId"</span>: <span class="string">"H20855"</span>,
-  <span class="key">"doAction"</span>: <span class="string">"2"</span>,           <span class="comment">// 2=移轉單</span>
-  <span class="key">"docase"</span>: <span class="string">"1"</span>,              <span class="comment">// 1=新增</span>
-  <span class="key">"head"</span>: {
-    <span class="key">"transferType"</span>: <span class="string">"D3"</span>,       <span class="comment">// D3=入庫單</span>
-    <span class="key">"date"</span>: <span class="string">"20260124"</span>,
-    <span class="key">"moveOutType"</span>: <span class="string">"2"</span>,
-    <span class="key">"moveOutCode"</span>: <span class="string">"14004"</span>,
-    <span class="key">"moveOutName"</span>: <span class="string">"jingheng"</span>,
-    <span class="key">"moveInType"</span>: <span class="string">"3"</span>,
-    <span class="key">"moveInCode"</span>: <span class="string">"1001"</span>,
-    <span class="key">"moveInName"</span>: <span class="string">"KHO TP 成品倉庫"</span>,
-    <span class="key">"factoryCode"</span>: <span class="string">"HR"</span>,
-    <span class="key">"confirmationCode"</span>: <span class="string">""</span>,
-    <span class="key">"remark"</span>: <span class="string">""</span>,
-    <span class="key">"orderDate"</span>: <span class="string">"20260124"</span>,
-    <span class="key">"confirmer"</span>: <span class="string">"H20855"</span>,
-    <span class="key">"taxType"</span>: <span class="string">"1"</span>,
-    <span class="key">"taxRate"</span>: <span class="string">""</span>,
-    <span class="key">"currency"</span>: <span class="string">""</span>,
-    <span class="key">"eMESTransferType"</span>: <span class="string">"D3"</span>,
-    <span class="key">"eMESTransferCode"</span>: <span class="string">"02601240066"</span>,
-    <span class="key">"create"</span>: <span class="string">"H20855"</span>,
-    <span class="key">"companyID"</span>: <span class="string">"HENRY2023"</span>
-  },
-  <span class="key">"line"</span>: [{
-    <span class="key">"moType"</span>: <span class="string">"5101"</span>,
-    <span class="key">"moCode"</span>: <span class="string">"20251108014"</span>,
-    <span class="key">"moveOutOpSeq"</span>: <span class="string">"0030"</span>,
-    <span class="key">"moveOutOpId"</span>: <span class="string">"XLJH"</span>,
-    <span class="key">"moveInOpSeq"</span>: <span class="string">""</span>,
-    <span class="key">"moveInOpId"</span>: <span class="string">""</span>,
-    <span class="key">"unit"</span>: <span class="string">"PCS"</span>,
-    <span class="key">"valuationUnit"</span>: <span class="string">"KG"</span>,
-    <span class="key">"state"</span>: <span class="string">"1"</span>,
-    <span class="key">"acceptanceQty"</span>: <span class="string">"423500.000"</span>,
-    <span class="key">"valuationQty"</span>: <span class="string">"0.000"</span>,
-    <span class="key">"scrapQty"</span>: <span class="string">"0.000"</span>,
-    <span class="key">"processUnitPrice"</span>: <span class="string">"0.000000"</span>,
-    <span class="key">"processAmount"</span>: <span class="string">"0.000000"</span>,
-    <span class="key">"deductionAmount"</span>: <span class="string">"0.0"</span>,
-    <span class="key">"useTime"</span>: <span class="string">"6379"</span>,
-    <span class="key">"useMachineTime"</span>: <span class="string">"0"</span>,
-    <span class="key">"moveOutCode"</span>: <span class="string">"14004"</span>,
-    <span class="key">"prepaidDate"</span>: <span class="string">""</span>,
-    <span class="key">"remark"</span>: <span class="string">""</span>,
-    <span class="key">"batchCode"</span>: <span class="string">"5101-20251108014"</span>,
-    <span class="key">"outSourceType"</span>: <span class="string">""</span>,
-    <span class="key">"outSourceCode"</span>: <span class="string">""</span>,
-    <span class="key">"outSourceSeq"</span>: <span class="string">""</span>,
-    <span class="key">"urgentMaterial"</span>: <span class="string">"N"</span>,
-    <span class="key">"qty"</span>: <span class="string">"423500.000"</span>,
-    <span class="key">"inspectionReturnQty"</span>: <span class="string">"0.000"</span>,
-    <span class="key">"acceptanceDate"</span>: <span class="string">"20260124"</span>,
-    <span class="key">"inspectionStatus"</span>: <span class="string">"0"</span>,
-    <span class="key">"deductionExplanation"</span>: <span class="string">""</span>,
-    <span class="key">"moveInCode"</span>: <span class="string">"1001"</span>,
-    <span class="key">"transferPackagingQty"</span>: <span class="string">"0.000"</span>,
-    <span class="key">"acceptancePackagingQty"</span>: <span class="string">"0.000"</span>,
-    <span class="key">"inspectionReturnPackagingQty"</span>: <span class="string">"0.000"</span>,
-    <span class="key">"scrapPackagingQty"</span>: <span class="string">"0.000"</span>,
-    <span class="key">"prodCode"</span>: <span class="string">"3-BJ900-03006-J02"</span>,
-    <span class="key">"prodName"</span>: <span class="string">"Hexagon socket button head screws ISO 7380-1 010.9"</span>,
-    <span class="key">"prodSpec"</span>: <span class="string">"M3P0.5*6"</span>,
-    <span class="key">"packUnit"</span>: <span class="string">""</span>,
-    <span class="key">"moveInLocation"</span>: <span class="string">"00"</span>,
-    <span class="key">"expirationDate"</span>: <span class="string">""</span>,
-    <span class="key">"reinspectionDate"</span>: <span class="string">""</span>,
-    <span class="key">"spc"</span>: <span class="string">"N"</span>,
-    <span class="key">"manufactureDualUnit"</span>: <span class="string">"N"</span>,
-    <span class="key">"printLabel"</span>: <span class="string">"N"</span>,
-    <span class="key">"dbUnitNumber"</span>: <span class="string">"0.00000"</span>,
-    <span class="key">"dbUnit"</span>: <span class="string">""</span>
-  }]
+  <span class="key">"request"</span>: {
+    <span class="key">"type"</span>: <span class="string">"sync"</span>,
+    <span class="key">"key"</span>: <span class="string">"交易識別碼"</span>,
+    <span class="key">"host"</span>: { <span class="comment">// 來源系統資訊</span> },
+    <span class="key">"service"</span>: { <span class="comment">// 目標服務資訊</span> },
+    <span class="key">"datakey"</span>: { <span class="comment">// 資料索引鍵</span> },
+    <span class="key">"payload"</span>: {
+      <span class="key">"std_data"</span>: {
+        <span class="key">"enterprise_no"</span>: <span class="string">"企業代碼"</span>,
+        <span class="key">"site_no"</span>: <span class="string">"據點代碼"</span>,
+        <span class="key">"stock_in_data"</span>: [ <span class="comment">// 入庫單資料陣列</span> ]
+      }
+    }
+  }
 }</pre>
             </div>
 
-            <h3>1.6 實際畫面截圖</h3>
-            <div class="screenshot-container">
-                <h4>📸 ESB 監控畫面 - eMES 發起請求</h4>
-                <img src="emes_ESB.jpg" alt="eMES → ESB JSON Request" onclick="window.open(this.src)"/>
-                <p class="screenshot-caption">eMES 發送 JSON 格式的入庫單資料到 ESB 中台</p>
-            </div>
+            <h3>2.3 request 根物件</h3>
+            <table>
+                <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>範例值</th></tr>
+                <tr><td>type</td><td>string</td><td><span class="required">Y</span></td><td>請求類型</td><td>"sync"</td></tr>
+                <tr><td>key</td><td>string</td><td><span class="required">Y</span></td><td>交易識別碼 (UUID/MD5)</td><td>"fca0a819df70df056ee57ae77f1712d4"</td></tr>
+                <tr><td>host</td><td>object</td><td><span class="required">Y</span></td><td>來源系統資訊</td><td>-</td></tr>
+                <tr><td>service</td><td>object</td><td><span class="required">Y</span></td><td>目標服務資訊</td><td>-</td></tr>
+                <tr><td>datakey</td><td>object</td><td><span class="required">Y</span></td><td>資料索引鍵</td><td>-</td></tr>
+                <tr><td>payload</td><td>object</td><td><span class="required">Y</span></td><td>實際資料內容</td><td>-</td></tr>
+            </table>
+
+            <h3>2.4 host 物件</h3>
+            <table>
+                <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>範例值</th></tr>
+                <tr><td>prod</td><td>string</td><td><span class="required">Y</span></td><td>產品代碼</td><td>"MES"</td></tr>
+                <tr><td>ver</td><td>string</td><td><span class="required">Y</span></td><td>版本</td><td>"6.00.08"</td></tr>
+                <tr><td>ip</td><td>string</td><td><span class="required">Y</span></td><td>來源 IP</td><td>"192.168.2.253"</td></tr>
+                <tr><td>id</td><td>string</td><td><span class="required">Y</span></td><td>系統識別碼</td><td>"PCBA_STD_Production"</td></tr>
+                <tr><td>acct</td><td>string</td><td><span class="optional">N</span></td><td>帳號</td><td>"DS"</td></tr>
+                <tr><td>lang</td><td>string</td><td><span class="optional">N</span></td><td>語系</td><td>"zh_TW"</td></tr>
+                <tr><td>timestamp</td><td>string</td><td><span class="required">Y</span></td><td>時間戳記 (YYYYMMDDHHmmssSSS)</td><td>"20260124152608524"</td></tr>
+            </table>
+
+            <h3>2.5 service 物件</h3>
+            <table>
+                <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>範例值</th></tr>
+                <tr><td>prod</td><td>string</td><td><span class="required">Y</span></td><td>目標產品</td><td>"ERP"</td></tr>
+                <tr><td>name</td><td>string</td><td><span class="required">Y</span></td><td>API 名稱</td><td>"stockin.data.create"</td></tr>
+                <tr><td>srvver</td><td>string</td><td><span class="optional">N</span></td><td>服務版本</td><td>"1.0.0"</td></tr>
+                <tr><td>ip</td><td>string</td><td><span class="optional">N</span></td><td>目標 IP</td><td>"192.168.2.100"</td></tr>
+                <tr><td>id</td><td>string</td><td><span class="optional">N</span></td><td>目標系統識別</td><td>"ERP_Production"</td></tr>
+            </table>
+
+            <h3>2.6 datakey 物件</h3>
+            <table>
+                <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>範例值</th></tr>
+                <tr><td>EntId</td><td>string</td><td><span class="required">Y</span></td><td>企業代碼</td><td>"HENRY2023"</td></tr>
+                <tr><td>CompanyId</td><td>string</td><td><span class="required">Y</span></td><td>公司代碼</td><td>"HENRY2023"</td></tr>
+                <tr><td>source_no</td><td>string</td><td><span class="optional">N</span></td><td>來源單號</td><td>""</td></tr>
+                <tr><td>wo_no</td><td>string</td><td><span class="optional">N</span></td><td>工單號</td><td>""</td></tr>
+            </table>
+
+            <h3>2.7 payload.std_data 物件</h3>
+            <table>
+                <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th></tr>
+                <tr><td>enterprise_no</td><td>string</td><td><span class="required">Y</span></td><td>企業代碼</td></tr>
+                <tr><td>site_no</td><td>string</td><td><span class="required">Y</span></td><td>據點代碼</td></tr>
+                <tr><td>stock_in_data</td><td>array</td><td><span class="required">Y</span></td><td>入庫單資料陣列</td></tr>
+            </table>
+
+            <h3>2.8 stock_in_data 陣列元素 (表頭)</h3>
+            <table>
+                <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>範例值</th></tr>
+                <tr><td>seq</td><td>number</td><td><span class="required">Y</span></td><td>序號</td><td>1</td></tr>
+                <tr><td>doc_type_no</td><td>string</td><td><span class="required">Y</span></td><td>單據類別 (5802=完工入庫)</td><td>"5802"</td></tr>
+                <tr><td>create_date</td><td>string</td><td><span class="required">Y</span></td><td>建立日期 (YYYYMMDD)</td><td>"20260124"</td></tr>
+                <tr><td>workstation_no</td><td>string</td><td><span class="required">Y</span></td><td>工作站編號</td><td>"14004"</td></tr>
+                <tr><td>factory_no</td><td>string</td><td><span class="required">Y</span></td><td>廠別</td><td>"HR"</td></tr>
+                <tr><td>source_no</td><td>string</td><td><span class="required">Y</span></td><td>來源單號 (MES單別-單號)</td><td>"D3-02601240066"</td></tr>
+                <tr><td>operator_no</td><td>string</td><td><span class="required">Y</span></td><td>操作人員工號</td><td>"H20855"</td></tr>
+                <tr><td>remark</td><td>string</td><td><span class="optional">N</span></td><td>備註</td><td>""</td></tr>
+                <tr><td>stock_in_detail</td><td>array</td><td><span class="required">Y</span></td><td>入庫明細陣列</td><td>-</td></tr>
+            </table>
+
+            <h3>2.9 stock_in_detail 陣列元素 (表身明細)</h3>
+            <table>
+                <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th><th>範例值</th></tr>
+                <tr><td>seq</td><td>string</td><td><span class="optional">N</span></td><td>明細序號</td><td>"1"</td></tr>
+                <tr><td>wo_no</td><td>string</td><td><span class="required">Y</span></td><td>工單號 (單別-單號)</td><td>"5101-20251108014"</td></tr>
+                <tr><td>item_no</td><td>string</td><td><span class="required">Y</span></td><td>品號</td><td>"3-BJ900-03006-J02"</td></tr>
+                <tr><td>stock_in_qty</td><td>number</td><td><span class="required">Y</span></td><td>入庫數量</td><td>423500.000</td></tr>
+                <tr><td>unit_no</td><td>string</td><td><span class="required">Y</span></td><td>單位</td><td>"PCS"</td></tr>
+                <tr><td>warehouse_no</td><td>string</td><td><span class="required">Y</span></td><td>倉庫編號</td><td>"1001"</td></tr>
+                <tr><td>location_no</td><td>string</td><td><span class="optional">N</span></td><td>儲位編號</td><td>"00"</td></tr>
+                <tr><td>lot_no</td><td>string</td><td><span class="required">Y</span></td><td>批號</td><td>"5101-20251108014"</td></tr>
+                <tr><td>plot_no</td><td>string</td><td><span class="optional">N</span></td><td>批號 (同 lot_no)</td><td>"5101-20251108014"</td></tr>
+                <tr><td>item_feature_no</td><td>string</td><td><span class="optional">N</span></td><td>產品特徵碼</td><td>""</td></tr>
+                <tr><td>remark</td><td>string</td><td><span class="optional">N</span></td><td>備註</td><td>""</td></tr>
+                <tr><td>outsourcing_stock_in_no</td><td>string</td><td><span class="optional">N</span></td><td>委外入庫單號</td><td>""</td></tr>
+                <tr><td>outsourcing_source_no</td><td>string</td><td><span class="optional">N</span></td><td>委外來源單號</td><td>""</td></tr>
+                <tr><td>purchase_seq</td><td>number</td><td><span class="optional">N</span></td><td>採購序號</td><td>null</td></tr>
+                <tr><td>stock_in_type</td><td>string</td><td><span class="optional">N</span></td><td>入庫類型</td><td>""</td></tr>
+            </table>
         </div>
 
-        <!-- 流程2: ESB → WFGP -->
-        <div class="section" id="flow2">
-            <div class="flow-header flow-2">
-                <div class="num">2</div>
-                <div class="info">
-                    <h3>ESB → WFGP (XML Request)</h3>
-                    <p>ESB 中台將 JSON 轉換為 XML 格式，發送至 WFGP/ERP 系統</p>
-                </div>
-            </div>
+        <!-- 3. Response 規格 -->
+        <div class="section" id="response">
+            <h2>3. Response 規格</h2>
 
-            <div class="flow-direction">
-                <div class="flow-box esb">ESB</div>
-                <div class="flow-arrow">→</div>
-                <div class="flow-box wfgp">WFGP</div>
-            </div>
-
-            <h3>2.1 XML 請求結構</h3>
-            <table>
-                <tr><th width="25%">項目</th><th>說明</th></tr>
-                <tr><td>格式</td><td><span class="badge badge-xml">XML</span></td></tr>
-                <tr><td>根元素</td><td><code>&lt;request&gt;</code></td></tr>
-                <tr><td>API Code</td><td><code>stockin.data.create</code></td></tr>
-                <tr><td>同步類型</td><td>sync (同步)</td></tr>
-            </table>
-
-            <h3>2.2 XML 結構說明</h3>
-            <table>
-                <tr><th>元素路徑</th><th>說明</th></tr>
-                <tr><td><code>request/@type</code></td><td>請求類型 (sync=同步)</td></tr>
-                <tr><td><code>request/@key</code></td><td>交易識別碼</td></tr>
-                <tr><td><code>request/host</code></td><td>來源系統資訊 (MES)</td></tr>
-                <tr><td><code>request/service</code></td><td>目標服務資訊 (WFGP)</td></tr>
-                <tr><td><code>request/datakey</code></td><td>資料索引鍵</td></tr>
-                <tr><td><code>request/payload/param/data_request</code></td><td>實際資料內容</td></tr>
-            </table>
-
-            <h3>2.3 Host 元素屬性</h3>
-            <table>
-                <tr><th>屬性</th><th>說明</th><th>範例值</th></tr>
-                <tr><td>prod</td><td>產品代碼</td><td>MES</td></tr>
-                <tr><td>ver</td><td>版本</td><td>6.00.08</td></tr>
-                <tr><td>ip</td><td>來源 IP</td><td>192.168.2.253</td></tr>
-                <tr><td>id</td><td>系統識別</td><td>PCBA_STD_Production</td></tr>
-                <tr><td>acct</td><td>帳號</td><td>DS</td></tr>
-                <tr><td>lang</td><td>語系</td><td>zh_TW</td></tr>
-                <tr><td>timestamp</td><td>時間戳記</td><td>20260124152608524</td></tr>
-            </table>
-
-            <h3>2.4 Service 元素屬性</h3>
-            <table>
-                <tr><th>屬性</th><th>說明</th><th>範例值</th></tr>
-                <tr><td>prod</td><td>產品代碼</td><td>WFGP</td></tr>
-                <tr><td>name</td><td>API 名稱</td><td>stockin.data.create</td></tr>
-                <tr><td>srvver</td><td>服務版本</td><td>4.0.27</td></tr>
-                <tr><td>ip</td><td>目標 IP</td><td>192.168.2.253</td></tr>
-                <tr><td>id</td><td>系統識別</td><td>YIFEI_Production</td></tr>
-            </table>
-
-            <h3>2.5 Datakey 元素</h3>
-            <table>
-                <tr><th>Key 名稱</th><th>說明</th><th>範例值</th></tr>
-                <tr><td>EntId</td><td>企業代碼</td><td>HENRY2023</td></tr>
-                <tr><td>CompanyId</td><td>公司代碼</td><td>HENRY2023</td></tr>
-                <tr><td>source_no</td><td>來源單號</td><td>-</td></tr>
-                <tr><td>wo_no</td><td>工單號</td><td>-</td></tr>
-            </table>
-
-            <h3>2.6 stock_in_data 欄位</h3>
-            <table>
-                <tr><th>欄位</th><th>型別</th><th>說明</th><th>MES 對應</th></tr>
-                <tr><td>doc_type_no</td><td>string</td><td>單據類別 (5802=完工入庫)</td><td>transferType</td></tr>
-                <tr><td>create_date</td><td>date</td><td>建立日期</td><td>date</td></tr>
-                <tr><td>workstation_no</td><td>string</td><td>工作站編號</td><td>moveOutCode</td></tr>
-                <tr><td>remark</td><td>string</td><td>備註</td><td>remark</td></tr>
-                <tr><td>factory_no</td><td>string</td><td>廠別</td><td>factoryCode</td></tr>
-                <tr><td>source_no</td><td>string</td><td>來源單號 (MES單別-單號)</td><td>eMESTransferType-eMESTransferCode</td></tr>
-                <tr><td>operator_no</td><td>string</td><td>操作人員</td><td>create</td></tr>
-            </table>
-
-            <h3>2.7 stock_in_detail 欄位</h3>
-            <table>
-                <tr><th>欄位</th><th>型別</th><th>說明</th><th>MES 對應</th></tr>
-                <tr><td>seq</td><td>string</td><td>序號</td><td>-</td></tr>
-                <tr><td>wo_no</td><td>string</td><td>工單號</td><td>moType-moCode</td></tr>
-                <tr><td>outsourcing_stock_in_no</td><td>string</td><td>委外入庫單號</td><td>-</td></tr>
-                <tr><td>plot_no</td><td>string</td><td>批號</td><td>batchCode</td></tr>
-                <tr><td>item_no</td><td>string</td><td>品號</td><td>prodCode</td></tr>
-                <tr><td>stock_in_qty</td><td>numeric</td><td>入庫數量</td><td>qty</td></tr>
-                <tr><td>unit_no</td><td>string</td><td>單位</td><td>unit</td></tr>
-                <tr><td>warehouse_no</td><td>string</td><td>倉庫編號</td><td>moveInCode</td></tr>
-                <tr><td>location_no</td><td>string</td><td>儲位</td><td>moveInLocation</td></tr>
-                <tr><td>lot_no</td><td>string</td><td>批號</td><td>batchCode</td></tr>
-                <tr><td>item_feature_no</td><td>string</td><td>特徵碼</td><td>-</td></tr>
-                <tr><td>remark</td><td>string</td><td>備註</td><td>remark</td></tr>
-                <tr><td>purchase_seq</td><td>numeric</td><td>採購序號</td><td>-</td></tr>
-                <tr><td>stock_in_type</td><td>string</td><td>入庫類型</td><td>-</td></tr>
-                <tr><td>outsourcing_source_no</td><td>string</td><td>委外來源單號</td><td>-</td></tr>
-            </table>
-
-            <h3>2.8 XML 範例</h3>
+            <h3>3.1 JSON 結構</h3>
             <div class="code-block">
-                <span class="lang-tag">XML</span>
-<pre><span class="tag">&lt;request</span> <span class="attr">type</span>=<span class="string">"sync"</span> <span class="attr">key</span>=<span class="string">"fca0a819df70df056ee57ae77f1712d4"</span><span class="tag">&gt;</span>
-   <span class="tag">&lt;host</span> <span class="attr">prod</span>=<span class="string">"MES"</span> <span class="attr">ver</span>=<span class="string">"6.00.08"</span> <span class="attr">ip</span>=<span class="string">"192.168.2.253"</span>
-         <span class="attr">id</span>=<span class="string">"PCBA_STD_Production"</span> <span class="attr">acct</span>=<span class="string">"DS"</span> <span class="attr">lang</span>=<span class="string">"zh_TW"</span>
-         <span class="attr">timestamp</span>=<span class="string">"20260124152608524"</span> <span class="tag">/&gt;</span>
-   <span class="tag">&lt;service</span> <span class="attr">prod</span>=<span class="string">"WFGP"</span> <span class="attr">name</span>=<span class="string">"stockin.data.create"</span>
-            <span class="attr">srvver</span>=<span class="string">"4.0.27"</span> <span class="attr">ip</span>=<span class="string">"192.168.2.253"</span> <span class="attr">id</span>=<span class="string">"YIFEI_Production"</span> <span class="tag">/&gt;</span>
-   <span class="tag">&lt;datakey&gt;</span>
-      <span class="tag">&lt;key</span> <span class="attr">name</span>=<span class="string">"EntId"</span><span class="tag">&gt;</span>HENRY2023<span class="tag">&lt;/key&gt;</span>
-      <span class="tag">&lt;key</span> <span class="attr">name</span>=<span class="string">"CompanyId"</span><span class="tag">&gt;</span>HENRY2023<span class="tag">&lt;/key&gt;</span>
-      <span class="tag">&lt;key</span> <span class="attr">name</span>=<span class="string">"source_no"</span> <span class="tag">/&gt;</span>
-      <span class="tag">&lt;key</span> <span class="attr">name</span>=<span class="string">"wo_no"</span> <span class="tag">/&gt;</span>
-   <span class="tag">&lt;/datakey&gt;</span>
-   <span class="tag">&lt;payload&gt;</span>
-      <span class="tag">&lt;param</span> <span class="attr">key</span>=<span class="string">"std_data"</span> <span class="attr">type</span>=<span class="string">"xml"</span><span class="tag">&gt;</span>
-         <span class="tag">&lt;data_request&gt;</span>
-            <span class="tag">&lt;datainfo&gt;</span>
-               <span class="tag">&lt;parameter</span> <span class="attr">key</span>=<span class="string">"enterprise_no"</span> <span class="attr">type</span>=<span class="string">"numeric"</span><span class="tag">&gt;</span>HENRY2023<span class="tag">&lt;/parameter&gt;</span>
-               <span class="tag">&lt;parameter</span> <span class="attr">key</span>=<span class="string">"site_no"</span> <span class="attr">type</span>=<span class="string">"string"</span><span class="tag">&gt;</span>HENRY2023<span class="tag">&lt;/parameter&gt;</span>
-               <span class="tag">&lt;parameter</span> <span class="attr">key</span>=<span class="string">"stock_in_data"</span> <span class="attr">type</span>=<span class="string">"data"</span><span class="tag">&gt;</span>
-                  <span class="tag">&lt;data</span> <span class="attr">name</span>=<span class="string">"stock_in"</span><span class="tag">&gt;</span>
-                     <span class="tag">&lt;row</span> <span class="attr">seq</span>=<span class="string">"1"</span><span class="tag">&gt;</span>
-                        <span class="tag">&lt;field</span> <span class="attr">name</span>=<span class="string">"doc_type_no"</span> <span class="attr">type</span>=<span class="string">"string"</span><span class="tag">&gt;</span>5802<span class="tag">&lt;/field&gt;</span>
-                        <span class="tag">&lt;field</span> <span class="attr">name</span>=<span class="string">"create_date"</span> <span class="attr">type</span>=<span class="string">"date"</span><span class="tag">&gt;</span>20260124<span class="tag">&lt;/field&gt;</span>
-                        <span class="tag">&lt;field</span> <span class="attr">name</span>=<span class="string">"workstation_no"</span> <span class="attr">type</span>=<span class="string">"string"</span><span class="tag">&gt;</span>14004<span class="tag">&lt;/field&gt;</span>
-                        <span class="tag">&lt;field</span> <span class="attr">name</span>=<span class="string">"remark"</span> <span class="attr">type</span>=<span class="string">"string"</span> <span class="tag">/&gt;</span>
-                        <span class="tag">&lt;field</span> <span class="attr">name</span>=<span class="string">"factory_no"</span> <span class="attr">type</span>=<span class="string">"string"</span><span class="tag">&gt;</span>HR<span class="tag">&lt;/field&gt;</span>
-                        <span class="tag">&lt;field</span> <span class="attr">name</span>=<span class="string">"source_no"</span> <span class="attr">type</span>=<span class="string">"string"</span><span class="tag">&gt;</span>D3-02601240066<span class="tag">&lt;/field&gt;</span>
-                        <span class="tag">&lt;field</span> <span class="attr">name</span>=<span class="string">"operator_no"</span> <span class="attr">type</span>=<span class="string">"string"</span><span class="tag">&gt;</span>H20855<span class="tag">&lt;/field&gt;</span>
-                        <span class="tag">&lt;detail</span> <span class="attr">name</span>=<span class="string">"stock_in_detail"</span><span class="tag">&gt;</span>
-                           <span class="tag">&lt;row&gt;</span>
-                              <span class="tag">&lt;field</span> <span class="attr">name</span>=<span class="string">"seq"</span> <span class="attr">type</span>=<span class="string">"string"</span> <span class="tag">/&gt;</span>
-                              <span class="tag">&lt;field</span> <span class="attr">name</span>=<span class="string">"wo_no"</span> <span class="attr">type</span>=<span class="string">"string"</span><span class="tag">&gt;</span>5101-20251108014<span class="tag">&lt;/field&gt;</span>
-                              <span class="tag">&lt;field</span> <span class="attr">name</span>=<span class="string">"outsourcing_stock_in_no"</span> <span class="attr">type</span>=<span class="string">"string"</span> <span class="tag">/&gt;</span>
-                              <span class="tag">&lt;field</span> <span class="attr">name</span>=<span class="string">"plot_no"</span> <span class="attr">type</span>=<span class="string">"string"</span><span class="tag">&gt;</span>5101-20251108014<span class="tag">&lt;/field&gt;</span>
-                              <span class="tag">&lt;field</span> <span class="attr">name</span>=<span class="string">"item_no"</span> <span class="attr">type</span>=<span class="string">"string"</span><span class="tag">&gt;</span>3-BJ900-03006-J02<span class="tag">&lt;/field&gt;</span>
-                              <span class="tag">&lt;field</span> <span class="attr">name</span>=<span class="string">"stock_in_qty"</span> <span class="attr">type</span>=<span class="string">"numeric"</span><span class="tag">&gt;</span>423500.000<span class="tag">&lt;/field&gt;</span>
-                              <span class="tag">&lt;field</span> <span class="attr">name</span>=<span class="string">"unit_no"</span> <span class="attr">type</span>=<span class="string">"string"</span><span class="tag">&gt;</span>PCS<span class="tag">&lt;/field&gt;</span>
-                              <span class="tag">&lt;field</span> <span class="attr">name</span>=<span class="string">"warehouse_no"</span> <span class="attr">type</span>=<span class="string">"string"</span><span class="tag">&gt;</span>1001<span class="tag">&lt;/field&gt;</span>
-                              <span class="tag">&lt;field</span> <span class="attr">name</span>=<span class="string">"location_no"</span> <span class="attr">type</span>=<span class="string">"string"</span><span class="tag">&gt;</span>00<span class="tag">&lt;/field&gt;</span>
-                              <span class="tag">&lt;field</span> <span class="attr">name</span>=<span class="string">"lot_no"</span> <span class="attr">type</span>=<span class="string">"string"</span><span class="tag">&gt;</span>5101-20251108014<span class="tag">&lt;/field&gt;</span>
-                              <span class="tag">&lt;field</span> <span class="attr">name</span>=<span class="string">"item_feature_no"</span> <span class="attr">type</span>=<span class="string">"string"</span> <span class="tag">/&gt;</span>
-                              <span class="tag">&lt;field</span> <span class="attr">name</span>=<span class="string">"remark"</span> <span class="attr">type</span>=<span class="string">"string"</span> <span class="tag">/&gt;</span>
-                              <span class="tag">&lt;field</span> <span class="attr">name</span>=<span class="string">"purchase_seq"</span> <span class="attr">type</span>=<span class="string">"numeric"</span> <span class="tag">/&gt;</span>
-                              <span class="tag">&lt;field</span> <span class="attr">name</span>=<span class="string">"stock_in_type"</span> <span class="attr">type</span>=<span class="string">"string"</span> <span class="tag">/&gt;</span>
-                              <span class="tag">&lt;field</span> <span class="attr">name</span>=<span class="string">"outsourcing_source_no"</span> <span class="attr">type</span>=<span class="string">"string"</span> <span class="tag">/&gt;</span>
-                           <span class="tag">&lt;/row&gt;</span>
-                        <span class="tag">&lt;/detail&gt;</span>
-                     <span class="tag">&lt;/row&gt;</span>
-                  <span class="tag">&lt;/data&gt;</span>
-               <span class="tag">&lt;/parameter&gt;</span>
-            <span class="tag">&lt;/datainfo&gt;</span>
-         <span class="tag">&lt;/data_request&gt;</span>
-      <span class="tag">&lt;/param&gt;</span>
-   <span class="tag">&lt;/payload&gt;</span>
-<span class="tag">&lt;/request&gt;</span></pre>
+                <span class="lang-tag">JSON Structure</span>
+<pre>{
+  <span class="key">"response"</span>: {
+    <span class="key">"code"</span>: <span class="string">"回應代碼"</span>,
+    <span class="key">"message"</span>: <span class="string">"回應訊息"</span>,
+    <span class="key">"reqid"</span>: <span class="string">"請求識別碼"</span>,
+    <span class="key">"srvver"</span>: <span class="string">"服務版本"</span>,
+    <span class="key">"srvcode"</span>: <span class="string">"服務代碼"</span>,
+    <span class="key">"payload"</span>: {
+      <span class="key">"execution"</span>: {
+        <span class="key">"status_code"</span>: <span class="string">"執行狀態碼"</span>,
+        <span class="key">"sql_code"</span>: <span class="string">"SQL狀態碼"</span>,
+        <span class="key">"description"</span>: <span class="string">"描述"</span>
+      },
+      <span class="key">"datainfo"</span>: {
+        <span class="key">"stock_in_no"</span>: <span class="string">"入庫單號"</span>
+      }
+    }
+  }
+}</pre>
             </div>
 
-            <h3>2.9 實際畫面截圖</h3>
-            <div class="screenshot-container">
-                <h4>📸 ESB 監控畫面 - 發送至 WFGP</h4>
-                <img src="ESB_to_ERP.jpg" alt="ESB → WFGP XML Request" onclick="window.open(this.src)"/>
-                <p class="screenshot-caption">ESB 中台將 JSON 轉換為 XML 格式，發送至 WFGP/ERP 系統</p>
-            </div>
-        </div>
-
-        <!-- 流程3: WFGP → ESB -->
-        <div class="section" id="flow3">
-            <div class="flow-header flow-3">
-                <div class="num">3</div>
-                <div class="info">
-                    <h3>WFGP → ESB (XML Response)</h3>
-                    <p>WFGP/ERP 處理完成後，以 XML 格式回傳結果給 ESB</p>
-                </div>
-            </div>
-
-            <div class="flow-direction">
-                <div class="flow-box wfgp">WFGP</div>
-                <div class="flow-arrow">→</div>
-                <div class="flow-box esb">ESB</div>
-            </div>
-
-            <h3>3.1 XML 回應結構</h3>
+            <h3>3.2 response 物件</h3>
             <table>
-                <tr><th>元素路徑</th><th>說明</th></tr>
-                <tr><td><code>response/code</code></td><td>回應代碼 (019=平台同步回覆)</td></tr>
-                <tr><td><code>response/message</code></td><td>回應訊息</td></tr>
-                <tr><td><code>response/reqid</code></td><td>請求識別碼</td></tr>
-                <tr><td><code>response/srvver</code></td><td>服務版本</td></tr>
-                <tr><td><code>response/srvcode</code></td><td>服務代碼 (000=成功)</td></tr>
-                <tr><td><code>response/payload/param/data_response</code></td><td>實際回應內容</td></tr>
+                <tr><th>欄位</th><th>型別</th><th>說明</th><th>成功值</th></tr>
+                <tr><td>code</td><td>string</td><td>回應代碼</td><td>"019" (同步回覆)</td></tr>
+                <tr><td>message</td><td>string</td><td>回應訊息</td><td>"Success" 或 "平台回覆同步結果"</td></tr>
+                <tr><td>reqid</td><td>string</td><td>請求識別碼 (UUID)</td><td>"c43bc4d3-2388-456a-8924-371c1ff3ab89"</td></tr>
+                <tr><td>srvver</td><td>string</td><td>服務版本</td><td>"1.0.0"</td></tr>
+                <tr><td>srvcode</td><td>string</td><td>服務代碼</td><td>"000" (成功)</td></tr>
+                <tr><td>payload</td><td>object</td><td>回應資料</td><td>-</td></tr>
             </table>
 
-            <h3>3.2 execution 元素</h3>
+            <h3>3.3 payload.execution 物件</h3>
             <table>
-                <tr><th>屬性</th><th>說明</th><th>成功值</th></tr>
-                <tr><td>status/@code</td><td>執行狀態碼</td><td>0 (成功)</td></tr>
-                <tr><td>status/@sql_code</td><td>SQL 狀態碼</td><td>0</td></tr>
-                <tr><td>status/@description</td><td>描述</td><td>空字串 (成功時)</td></tr>
+                <tr><th>欄位</th><th>型別</th><th>說明</th><th>成功值</th></tr>
+                <tr><td>status_code</td><td>string</td><td>執行狀態碼</td><td>"0"</td></tr>
+                <tr><td>sql_code</td><td>string</td><td>SQL 狀態碼</td><td>"0"</td></tr>
+                <tr><td>description</td><td>string</td><td>錯誤描述 (成功時為空)</td><td>""</td></tr>
             </table>
 
-            <h3>3.3 datainfo 回傳欄位</h3>
+            <h3>3.4 payload.datainfo 物件</h3>
             <table>
                 <tr><th>欄位</th><th>型別</th><th>說明</th><th>範例值</th></tr>
-                <tr><td>stock_in_no</td><td>string</td><td>入庫單號 (單別-單號)</td><td>5802-20260124066</td></tr>
+                <tr><td>stock_in_no</td><td>string</td><td>入庫單號 (單別-單號)</td><td>"5802-20260124066"</td></tr>
             </table>
-
-            <h3>3.4 XML 範例</h3>
-            <div class="code-block">
-                <span class="lang-tag">XML</span>
-<pre><span class="tag">&lt;response&gt;</span>
-   <span class="tag">&lt;code&gt;</span>019<span class="tag">&lt;/code&gt;</span>
-   <span class="tag">&lt;message&gt;</span>EAI Response:平台回覆同步結果<span class="tag">&lt;/message&gt;</span>
-   <span class="tag">&lt;reqid&gt;</span>c43bc4d3-2388-456a-8924-371c1ff3ab89<span class="tag">&lt;/reqid&gt;</span>
-   <span class="tag">&lt;srvver&gt;</span>4.0.0<span class="tag">&lt;/srvver&gt;</span>
-   <span class="tag">&lt;srvcode&gt;</span>000<span class="tag">&lt;/srvcode&gt;</span>
-   <span class="tag">&lt;payload&gt;</span>
-      <span class="tag">&lt;param</span> <span class="attr">key</span>=<span class="string">"std_data"</span> <span class="attr">type</span>=<span class="string">"xml"</span><span class="tag">&gt;</span>
-         <span class="tag">&lt;data_response&gt;</span>
-            <span class="tag">&lt;execution&gt;</span>
-               <span class="tag">&lt;status</span> <span class="attr">code</span>=<span class="string">"0"</span> <span class="attr">sql_code</span>=<span class="string">"0"</span> <span class="attr">description</span>=<span class="string">""</span> <span class="tag">/&gt;</span>
-            <span class="tag">&lt;/execution&gt;</span>
-            <span class="tag">&lt;datainfo&gt;</span>
-               <span class="tag">&lt;parameter</span> <span class="attr">key</span>=<span class="string">"stock_in_no"</span> <span class="attr">type</span>=<span class="string">"string"</span><span class="tag">&gt;</span>5802-20260124066<span class="tag">&lt;/parameter&gt;</span>
-            <span class="tag">&lt;/datainfo&gt;</span>
-         <span class="tag">&lt;/data_response&gt;</span>
-      <span class="tag">&lt;/param&gt;</span>
-   <span class="tag">&lt;/payload&gt;</span>
-<span class="tag">&lt;/response&gt;</span></pre>
-            </div>
 
             <div class="info-box success">
                 <strong>✅ 成功判斷條件</strong>
                 <ul style="margin-top:10px; margin-left:20px;">
-                    <li><code>execution/status/@code = "0"</code></li>
-                    <li><code>datainfo/parameter[@key='stock_in_no']</code> 有值</li>
+                    <li><code>response.srvcode = "000"</code></li>
+                    <li><code>response.payload.execution.status_code = "0"</code></li>
+                    <li><code>response.payload.datainfo.stock_in_no</code> 有值</li>
                 </ul>
-            </div>
-
-            <h3>3.5 實際畫面截圖</h3>
-            <div class="screenshot-container">
-                <h4>📸 ESB 監控畫面 - WFGP 回傳結果</h4>
-                <img src="ERP_TO_ESB.jpg" alt="WFGP → ESB XML Response" onclick="window.open(this.src)"/>
-                <p class="screenshot-caption">WFGP/ERP 處理完成後，以 XML 格式回傳入庫單號至 ESB</p>
             </div>
         </div>
 
-        <!-- 流程4: ESB → eMES -->
-        <div class="section" id="flow4">
-            <div class="flow-header flow-4">
-                <div class="num">4</div>
-                <div class="info">
-                    <h3>ESB → eMES (JSON Response)</h3>
-                    <p>ESB 將 XML 轉換為 JSON 格式，回傳給 MES 系統</p>
-                </div>
-            </div>
+        <!-- 4. 完整欄位說明 -->
+        <div class="section" id="fields">
+            <h2>4. 完整欄位說明</h2>
 
-            <div class="flow-direction">
-                <div class="flow-box esb">ESB</div>
-                <div class="flow-arrow">→</div>
-                <div class="flow-box emes">eMES</div>
-            </div>
-
-            <h3>4.1 JSON 回應結構</h3>
+            <h3>4.1 MES 欄位對應表</h3>
             <table>
-                <tr><th>欄位</th><th>型別</th><th>說明</th><th>範例值</th></tr>
-                <tr><td>code</td><td>string</td><td>回應代碼 (200=成功)</td><td>"200"</td></tr>
-                <tr><td>TB001</td><td>string</td><td>ERP 單據類別</td><td>"5802"</td></tr>
-                <tr><td>TB002</td><td>string</td><td>ERP 單據號碼</td><td>"20260124066"</td></tr>
-                <tr><td>msg</td><td>string</td><td>訊息</td><td>""</td></tr>
+                <tr><th>JSON 欄位</th><th>MES 欄位</th><th>說明</th></tr>
+                <tr><td>doc_type_no</td><td>TRANSTYPE</td><td>單據類別 (5802=完工入庫)</td></tr>
+                <tr><td>create_date</td><td>TRANSDATE</td><td>單據日期</td></tr>
+                <tr><td>workstation_no</td><td>OUTDEPID</td><td>移出工作站</td></tr>
+                <tr><td>factory_no</td><td>FACTORYID</td><td>廠別</td></tr>
+                <tr><td>source_no</td><td>TRANSTYPE + TRANSNO</td><td>MES 來源單號</td></tr>
+                <tr><td>operator_no</td><td>CREATER</td><td>操作人員</td></tr>
+                <tr><td>wo_no</td><td>MOTYPE + MONO</td><td>工單號</td></tr>
+                <tr><td>item_no</td><td>ITEMID</td><td>品號</td></tr>
+                <tr><td>stock_in_qty</td><td>TRANSQTY</td><td>入庫數量</td></tr>
+                <tr><td>unit_no</td><td>UNIT</td><td>單位</td></tr>
+                <tr><td>warehouse_no</td><td>INDEPID</td><td>移入倉庫</td></tr>
+                <tr><td>location_no</td><td>INSTORAGESPACE</td><td>移入儲位</td></tr>
+                <tr><td>lot_no</td><td>LOTNO</td><td>批號</td></tr>
             </table>
 
-            <h3>4.2 MES 後續處理</h3>
+            <h3>4.2 MES 回寫欄位</h3>
             <table>
-                <tr><th>處理項目</th><th>說明</th><th>資料表</th></tr>
-                <tr><td>TL011 回寫</td><td>將 TB001 寫入 TL011</td><td>SFT_TRANSORDER_LINE</td></tr>
-                <tr><td>TL012 回寫</td><td>將 TB002 寫入 TL012</td><td>SFT_TRANSORDER_LINE</td></tr>
-                <tr><td>TL013 更新</td><td>標記已送 ERP (Y)</td><td>SFT_TRANSORDER_LINE</td></tr>
+                <tr><th>Response 欄位</th><th>MES 欄位</th><th>說明</th></tr>
+                <tr><td>stock_in_no (前段)</td><td>SFT_TRANSORDER_LINE.TL011</td><td>ERP 單據類別</td></tr>
+                <tr><td>stock_in_no (後段)</td><td>SFT_TRANSORDER_LINE.TL012</td><td>ERP 單據號碼</td></tr>
+                <tr><td>-</td><td>SFT_TRANSORDER_LINE.TL013</td><td>標記已送 ERP (設為 'Y')</td></tr>
             </table>
-
-            <h3>4.3 JSON 範例</h3>
-
-            <div class="comparison-grid">
-                <div class="comparison-card">
-                    <h4>✅ 成功回應</h4>
-                    <div class="code-block">
-                        <span class="lang-tag">JSON</span>
-<pre>{
-  <span class="key">"code"</span>: <span class="string">"200"</span>,
-  <span class="key">"TB002"</span>: <span class="string">"20260124066"</span>,
-  <span class="key">"TB001"</span>: <span class="string">"5802"</span>,
-  <span class="key">"msg"</span>: <span class="string">""</span>
-}</pre>
-                    </div>
-                </div>
-
-                <div class="comparison-card">
-                    <h4>❌ 失敗回應</h4>
-                    <div class="code-block">
-                        <span class="lang-tag">JSON</span>
-<pre>{
-  <span class="key">"code"</span>: <span class="string">"500"</span>,
-  <span class="key">"msg"</span>: <span class="string">"工單不存在"</span>,
-  <span class="key">"TB001"</span>: <span class="string">""</span>,
-  <span class="key">"TB002"</span>: <span class="string">""</span>
-}</pre>
-                    </div>
-                </div>
-            </div>
 
             <div class="info-box warning">
-                <strong>⚠️ 注意事項</strong>
-                <ul style="margin-top:10px; margin-left:20px;">
-                    <li>TB001 (單別) 和 TB002 (單號) 用於取消入庫時的 ERP 單據識別</li>
-                    <li>若取消出站時 TL011/TL012 為空，將無法呼叫取消 API</li>
-                    <li>建議取消前確認 ERP 回傳已完成</li>
-                </ul>
-            </div>
-
-            <h3>4.4 實際畫面截圖</h3>
-            <div class="screenshot-container">
-                <h4>📸 ESB 監控畫面 - 回傳至 eMES</h4>
-                <img src="ESB_TO_EMES.jpg" alt="ESB → eMES JSON Response" onclick="window.open(this.src)"/>
-                <p class="screenshot-caption">ESB 中台將 XML 轉換為 JSON 格式，回傳入庫單號至 eMES</p>
+                <strong>⚠️ stock_in_no 解析規則</strong>
+                <p style="margin-top:10px;">
+                    回傳的 <code>stock_in_no</code> 格式為 <code>單別-單號</code>，例如 <code>5802-20260124066</code><br>
+                    MES 需拆解：<br>
+                    • TL011 = "5802" (單別)<br>
+                    • TL012 = "20260124066" (單號)
+                </p>
             </div>
         </div>
 
-        <!-- 5. 完整欄位對照表 -->
-        <div class="section" id="fields">
-            <h2>5. 完整欄位對照表</h2>
+        <!-- 5. 完整範例 -->
+        <div class="section" id="examples">
+            <h2>5. 完整範例</h2>
 
-            <h3>5.1 JSON ↔ XML 欄位對照</h3>
-            <table>
-                <tr>
-                    <th>MES 欄位</th>
-                    <th>JSON 欄位 (eMES→ESB)</th>
-                    <th>XML 欄位 (ESB→WFGP)</th>
-                    <th>說明</th>
-                </tr>
-                <tr><td>TRANSTYPE</td><td>head.transferType</td><td>doc_type_no</td><td>單據類別</td></tr>
-                <tr><td>TRANSDATE</td><td>head.date</td><td>create_date</td><td>單據日期</td></tr>
-                <tr><td>OUTDEPID</td><td>head.moveOutCode</td><td>workstation_no</td><td>移出代碼</td></tr>
-                <tr><td>FACTORYID</td><td>head.factoryCode</td><td>factory_no</td><td>廠別</td></tr>
-                <tr><td>TRANSTYPE-TRANSNO</td><td>head.eMESTransferType-eMESTransferCode</td><td>source_no</td><td>來源單號</td></tr>
-                <tr><td>CREATER</td><td>head.create</td><td>operator_no</td><td>操作人員</td></tr>
-                <tr><td>MOTYPE-MONO</td><td>line.moType-moCode</td><td>wo_no</td><td>工單號</td></tr>
-                <tr><td>LOTNO</td><td>line.batchCode</td><td>plot_no / lot_no</td><td>批號</td></tr>
-                <tr><td>ITEMID</td><td>line.prodCode</td><td>item_no</td><td>品號</td></tr>
-                <tr><td>TRANSQTY</td><td>line.qty</td><td>stock_in_qty</td><td>入庫數量</td></tr>
-                <tr><td>UNIT</td><td>line.unit</td><td>unit_no</td><td>單位</td></tr>
-                <tr><td>INDEPID</td><td>head.moveInCode / line.moveInCode</td><td>warehouse_no</td><td>倉庫</td></tr>
-                <tr><td>INSTORAGESPACE</td><td>line.moveInLocation</td><td>location_no</td><td>儲位</td></tr>
-            </table>
+            <h3>5.1 Request 完整範例</h3>
+            <div class="code-block">
+                <span class="lang-tag">JSON</span>
+<pre>{
+  <span class="key">"request"</span>: {
+    <span class="key">"type"</span>: <span class="string">"sync"</span>,
+    <span class="key">"key"</span>: <span class="string">"fca0a819df70df056ee57ae77f1712d4"</span>,
+    <span class="key">"host"</span>: {
+      <span class="key">"prod"</span>: <span class="string">"MES"</span>,
+      <span class="key">"ver"</span>: <span class="string">"6.00.08"</span>,
+      <span class="key">"ip"</span>: <span class="string">"192.168.2.253"</span>,
+      <span class="key">"id"</span>: <span class="string">"PCBA_STD_Production"</span>,
+      <span class="key">"acct"</span>: <span class="string">"DS"</span>,
+      <span class="key">"lang"</span>: <span class="string">"zh_TW"</span>,
+      <span class="key">"timestamp"</span>: <span class="string">"20260124152608524"</span>
+    },
+    <span class="key">"service"</span>: {
+      <span class="key">"prod"</span>: <span class="string">"ERP"</span>,
+      <span class="key">"name"</span>: <span class="string">"stockin.data.create"</span>,
+      <span class="key">"srvver"</span>: <span class="string">"1.0.0"</span>,
+      <span class="key">"ip"</span>: <span class="string">"192.168.2.100"</span>,
+      <span class="key">"id"</span>: <span class="string">"ERP_Production"</span>
+    },
+    <span class="key">"datakey"</span>: {
+      <span class="key">"EntId"</span>: <span class="string">"HENRY2023"</span>,
+      <span class="key">"CompanyId"</span>: <span class="string">"HENRY2023"</span>,
+      <span class="key">"source_no"</span>: <span class="string">""</span>,
+      <span class="key">"wo_no"</span>: <span class="string">""</span>
+    },
+    <span class="key">"payload"</span>: {
+      <span class="key">"std_data"</span>: {
+        <span class="key">"enterprise_no"</span>: <span class="string">"HENRY2023"</span>,
+        <span class="key">"site_no"</span>: <span class="string">"HENRY2023"</span>,
+        <span class="key">"stock_in_data"</span>: [
+          {
+            <span class="key">"seq"</span>: <span class="number">1</span>,
+            <span class="key">"doc_type_no"</span>: <span class="string">"5802"</span>,
+            <span class="key">"create_date"</span>: <span class="string">"20260124"</span>,
+            <span class="key">"workstation_no"</span>: <span class="string">"14004"</span>,
+            <span class="key">"remark"</span>: <span class="string">""</span>,
+            <span class="key">"factory_no"</span>: <span class="string">"HR"</span>,
+            <span class="key">"source_no"</span>: <span class="string">"D3-02601240066"</span>,
+            <span class="key">"operator_no"</span>: <span class="string">"H20855"</span>,
+            <span class="key">"stock_in_detail"</span>: [
+              {
+                <span class="key">"seq"</span>: <span class="string">"1"</span>,
+                <span class="key">"wo_no"</span>: <span class="string">"5101-20251108014"</span>,
+                <span class="key">"outsourcing_stock_in_no"</span>: <span class="string">""</span>,
+                <span class="key">"plot_no"</span>: <span class="string">"5101-20251108014"</span>,
+                <span class="key">"item_no"</span>: <span class="string">"3-BJ900-03006-J02"</span>,
+                <span class="key">"stock_in_qty"</span>: <span class="number">423500.000</span>,
+                <span class="key">"unit_no"</span>: <span class="string">"PCS"</span>,
+                <span class="key">"warehouse_no"</span>: <span class="string">"1001"</span>,
+                <span class="key">"location_no"</span>: <span class="string">"00"</span>,
+                <span class="key">"lot_no"</span>: <span class="string">"5101-20251108014"</span>,
+                <span class="key">"item_feature_no"</span>: <span class="string">""</span>,
+                <span class="key">"remark"</span>: <span class="string">""</span>,
+                <span class="key">"purchase_seq"</span>: <span class="bool">null</span>,
+                <span class="key">"stock_in_type"</span>: <span class="string">""</span>,
+                <span class="key">"outsourcing_source_no"</span>: <span class="string">""</span>
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}</pre>
+            </div>
 
-            <h3>5.2 回應欄位對照</h3>
-            <table>
-                <tr>
-                    <th>XML 欄位 (WFGP→ESB)</th>
-                    <th>JSON 欄位 (ESB→eMES)</th>
-                    <th>MES 欄位</th>
-                    <th>說明</th>
-                </tr>
-                <tr><td>stock_in_no (前4碼)</td><td>TB001</td><td>TL011</td><td>ERP 單據類別</td></tr>
-                <tr><td>stock_in_no (後段)</td><td>TB002</td><td>TL012</td><td>ERP 單據號碼</td></tr>
-                <tr><td>execution/status/@code</td><td>code</td><td>-</td><td>執行狀態</td></tr>
-            </table>
+            <h3>5.2 Response 成功範例</h3>
+            <div class="code-block">
+                <span class="lang-tag">JSON</span>
+<pre>{
+  <span class="key">"response"</span>: {
+    <span class="key">"code"</span>: <span class="string">"019"</span>,
+    <span class="key">"message"</span>: <span class="string">"Success"</span>,
+    <span class="key">"reqid"</span>: <span class="string">"c43bc4d3-2388-456a-8924-371c1ff3ab89"</span>,
+    <span class="key">"srvver"</span>: <span class="string">"1.0.0"</span>,
+    <span class="key">"srvcode"</span>: <span class="string">"000"</span>,
+    <span class="key">"payload"</span>: {
+      <span class="key">"execution"</span>: {
+        <span class="key">"status_code"</span>: <span class="string">"0"</span>,
+        <span class="key">"sql_code"</span>: <span class="string">"0"</span>,
+        <span class="key">"description"</span>: <span class="string">""</span>
+      },
+      <span class="key">"datainfo"</span>: {
+        <span class="key">"stock_in_no"</span>: <span class="string">"5802-20260124066"</span>
+      }
+    }
+  }
+}</pre>
+            </div>
+
+            <h3>5.3 Response 失敗範例</h3>
+            <div class="code-block">
+                <span class="lang-tag">JSON</span>
+<pre>{
+  <span class="key">"response"</span>: {
+    <span class="key">"code"</span>: <span class="string">"500"</span>,
+    <span class="key">"message"</span>: <span class="string">"Error"</span>,
+    <span class="key">"reqid"</span>: <span class="string">"c43bc4d3-2388-456a-8924-371c1ff3ab89"</span>,
+    <span class="key">"srvver"</span>: <span class="string">"1.0.0"</span>,
+    <span class="key">"srvcode"</span>: <span class="string">"999"</span>,
+    <span class="key">"payload"</span>: {
+      <span class="key">"execution"</span>: {
+        <span class="key">"status_code"</span>: <span class="string">"1"</span>,
+        <span class="key">"sql_code"</span>: <span class="string">"0"</span>,
+        <span class="key">"description"</span>: <span class="string">"工單不存在"</span>
+      },
+      <span class="key">"datainfo"</span>: {
+        <span class="key">"stock_in_no"</span>: <span class="string">""</span>
+      }
+    }
+  }
+}</pre>
+            </div>
         </div>
 
-        <!-- 6. 錯誤處理 -->
+        <!-- 6. 錯誤碼 -->
         <div class="section" id="errors">
-            <h2>6. 錯誤處理與狀態碼</h2>
+            <h2>6. 錯誤碼與處理</h2>
 
-            <h3>6.1 ESB 回應代碼</h3>
+            <h3>6.1 srvcode 服務代碼</h3>
             <table>
-                <tr><th>code</th><th>srvcode</th><th>說明</th></tr>
-                <tr><td>019</td><td>000</td><td>成功 - 平台同步回覆</td></tr>
-                <tr><td>其他</td><td>非 000</td><td>失敗 - 查看 description</td></tr>
+                <tr><th>代碼</th><th>說明</th></tr>
+                <tr><td>000</td><td>成功</td></tr>
+                <tr><td>999</td><td>一般錯誤</td></tr>
+                <tr><td>其他</td><td>依 ERP 定義</td></tr>
             </table>
 
-            <h3>6.2 ERP 執行狀態</h3>
+            <h3>6.2 execution.status_code</h3>
             <table>
-                <tr><th>status/@code</th><th>說明</th></tr>
+                <tr><th>代碼</th><th>說明</th></tr>
                 <tr><td>0</td><td>執行成功</td></tr>
-                <tr><td>非 0</td><td>執行失敗，查看 description</td></tr>
+                <tr><td>1</td><td>執行失敗</td></tr>
+                <tr><td>其他</td><td>依 ERP 定義</td></tr>
             </table>
 
-            <h3>6.3 MES 處理狀態</h3>
+            <h3>6.3 常見錯誤情境</h3>
             <table>
-                <tr><th>code</th><th>說明</th><th>MES 內部</th></tr>
-                <tr><td>200</td><td>成功</td><td>ISOK = true</td></tr>
-                <tr><td>500</td><td>失敗</td><td>ISOK = false</td></tr>
-            </table>
-
-            <h3>6.4 常見錯誤情境</h3>
-            <table>
-                <tr><th>錯誤訊息</th><th>可能原因</th><th>處理建議</th></tr>
-                <tr><td>工單不存在</td><td>moType-moCode 錯誤</td><td>檢查工單號碼格式</td></tr>
+                <tr><th>description</th><th>可能原因</th><th>處理建議</th></tr>
+                <tr><td>工單不存在</td><td>wo_no 格式錯誤或工單未建立</td><td>檢查工單號碼格式</td></tr>
                 <tr><td>數量超過餘量</td><td>累計入庫超過工單數量</td><td>確認工單可入庫餘量</td></tr>
-                <tr><td>倉庫不存在</td><td>moveInCode 無效</td><td>檢查倉庫設定</td></tr>
-                <tr><td>Return result parsing error!</td><td>ERP 回傳格式異常或連線失敗</td><td>檢查 ESB/ERP 連線狀態</td></tr>
-                <tr><td>Timeout</td><td>ERP 處理超時</td><td>檢查 ERP 系統狀態，考慮補送</td></tr>
+                <tr><td>倉庫不存在</td><td>warehouse_no 無效</td><td>檢查倉庫設定</td></tr>
+                <tr><td>品號不存在</td><td>item_no 無效</td><td>檢查品號主檔</td></tr>
+                <tr><td>單位不符</td><td>unit_no 與品號單位不符</td><td>確認正確單位</td></tr>
             </table>
         </div>
 
-        <!-- 7. 附錄 -->
-        <div class="section" id="appendix">
-            <h2>7. 附錄：程式碼位置</h2>
+        <!-- 7. 取消入庫 -->
+        <div class="section" id="cancel">
+            <h2>7. 取消入庫 API</h2>
 
-            <h3>7.1 MES 端程式</h3>
+            <h3>7.1 API 基本資訊</h3>
             <table>
-                <tr><th>模組</th><th>檔案</th><th>用途</th></tr>
-                <tr><td>SFT_core</td><td>TransOrderDataToJson.java</td><td>入庫資料組裝與 API 路由判斷</td></tr>
-                <tr><td>SFT_core</td><td>SendFormSbyJson.java</td><td>JSON 組裝主程式</td></tr>
-                <tr><td>SFT_core</td><td>SendFormElementbyJson.java</td><td>欄位映射 (getTransferFormHead/Body)</td></tr>
-                <tr><td>SFT_ERPIntegrate</td><td>XmlToERP_handler.java</td><td>ESB 呼叫與回應處理</td></tr>
-                <tr><td>SFT_core</td><td>GeneralUpdater.java</td><td>取消入庫邏輯</td></tr>
+                <tr><th width="25%">項目</th><th>說明</th></tr>
+                <tr><td>API 名稱</td><td><code>stockin.data.process</code></td></tr>
+                <tr><td>功能說明</td><td>取消/作廢入庫單</td></tr>
+                <tr><td>呼叫方向</td><td>MES → ERP</td></tr>
             </table>
 
-            <h3>7.2 關鍵程式碼位置</h3>
-            <table>
-                <tr><th>功能</th><th>位置</th></tr>
-                <tr><td>TRANSTYPE 判斷 (59=委外)</td><td>TransOrderDataToJson.java:648</td></tr>
-                <tr><td>表頭欄位映射</td><td>SendFormElementbyJson.java:180-218</td></tr>
-                <tr><td>表身欄位映射</td><td>SendFormElementbyJson.java:226-308</td></tr>
-                <tr><td>Response 解析</td><td>XmlToERP_handler.java:102-114</td></tr>
-                <tr><td>TL011/TL012 回寫</td><td>sentERPToidToSFT()</td></tr>
-            </table>
+            <h3>7.2 Request 範例</h3>
+            <div class="code-block">
+                <span class="lang-tag">JSON</span>
+<pre>{
+  <span class="key">"request"</span>: {
+    <span class="key">"type"</span>: <span class="string">"sync"</span>,
+    <span class="key">"key"</span>: <span class="string">"取消交易識別碼"</span>,
+    <span class="key">"host"</span>: { <span class="comment">/* 同 stockin.data.create */</span> },
+    <span class="key">"service"</span>: {
+      <span class="key">"prod"</span>: <span class="string">"ERP"</span>,
+      <span class="key">"name"</span>: <span class="string">"stockin.data.process"</span>,
+      <span class="key">"srvver"</span>: <span class="string">"1.0.0"</span>
+    },
+    <span class="key">"datakey"</span>: {
+      <span class="key">"EntId"</span>: <span class="string">"HENRY2023"</span>,
+      <span class="key">"CompanyId"</span>: <span class="string">"HENRY2023"</span>
+    },
+    <span class="key">"payload"</span>: {
+      <span class="key">"std_data"</span>: {
+        <span class="key">"enterprise_no"</span>: <span class="string">"HENRY2023"</span>,
+        <span class="key">"site_no"</span>: <span class="string">"HENRY2023"</span>,
+        <span class="key">"doc_type_no"</span>: <span class="string">"5802"</span>,
+        <span class="key">"doc_no"</span>: <span class="string">"20260124066"</span>,
+        <span class="key">"action"</span>: <span class="string">"cancel"</span>
+      }
+    }
+  }
+}</pre>
+            </div>
 
-            <h3>7.3 ESB 設定 (ESB_PARAMETER)</h3>
+            <h3>7.3 取消 API 欄位說明</h3>
             <table>
-                <tr><th>EMES_INTERFACE</th><th>ESB_INTERFACE</th><th>說明</th></tr>
-                <tr><td>/sendTransForm</td><td>{ESB_URL}/sendTransForm</td><td>一般移轉單/入庫單</td></tr>
-                <tr><td>/outsourcingPurchaseStockinCreate</td><td>{ESB_URL}/outsourcingPurchaseStockinCreate</td><td>委外進貨單 (TRANSTYPE=59)</td></tr>
-                <tr><td>/cancelStockIn</td><td>{ESB_URL}/cancelStockIn</td><td>取消倉管</td></tr>
-                <tr><td>/outsourcingProcess</td><td>{ESB_URL}/outsourcingProcess</td><td>取消委外 (TRANSORDERTYPE=59)</td></tr>
-            </table>
-
-            <h3>7.4 相關資料表</h3>
-            <table>
-                <tr><th>系統</th><th>資料表</th><th>用途</th></tr>
-                <tr><td>MES</td><td>SFT_TRANSORDER</td><td>移轉單主檔</td></tr>
-                <tr><td>MES</td><td>SFT_TRANSORDER_LINE</td><td>移轉單明細 (TL011/TL012)</td></tr>
-                <tr><td>MES</td><td>MODETAIL</td><td>製令明細</td></tr>
-                <tr><td>MES</td><td>ESB_PARAMETER</td><td>ESB 介面設定</td></tr>
-            </table>
-
-            <h3>7.5 文件版本</h3>
-            <table>
-                <tr><th>版本</th><th>日期</th><th>說明</th></tr>
-                <tr><td>v1.0</td><td>2026-04-20</td><td>初版建立，包含四段式通訊完整說明</td></tr>
+                <tr><th>欄位</th><th>型別</th><th>必填</th><th>說明</th></tr>
+                <tr><td>doc_type_no</td><td>string</td><td><span class="required">Y</span></td><td>原入庫單單別 (TL011)</td></tr>
+                <tr><td>doc_no</td><td>string</td><td><span class="required">Y</span></td><td>原入庫單單號 (TL012)</td></tr>
+                <tr><td>action</td><td>string</td><td><span class="required">Y</span></td><td>動作 ("cancel"=取消)</td></tr>
             </table>
         </div>
 
-        <div class="info-box success" style="margin-top: 30px;">
-            <strong>📋 文件結束</strong><br>
-            本文件詳細描述 eMES 入庫單 API 的四段式通訊流程 (eMES→ESB→WFGP→ESB→eMES)。<br>
-            如有疑問或需要調整，請聯繫開發團隊。
+        <!-- Footer -->
+        <div class="info-box info" style="margin-top: 30px;">
+            <strong>📋 文件資訊</strong>
+            <table style="margin-top:10px; background:transparent; border:none;">
+                <tr style="background:transparent;"><td style="border:none; padding:5px 20px 5px 0;"><strong>版本</strong></td><td style="border:none;">v1.0 (JSON 版)</td></tr>
+                <tr style="background:transparent;"><td style="border:none; padding:5px 20px 5px 0;"><strong>日期</strong></td><td style="border:none;">2026-04-20</td></tr>
+                <tr style="background:transparent;"><td style="border:none; padding:5px 20px 5px 0;"><strong>API 名稱</strong></td><td style="border:none;">stockin.data.create / stockin.data.process</td></tr>
+                <tr style="background:transparent;"><td style="border:none; padding:5px 20px 5px 0;"><strong>格式</strong></td><td style="border:none;">JSON (UTF-8)</td></tr>
+            </table>
         </div>
     </div>
 </body>
